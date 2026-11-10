@@ -71,7 +71,19 @@ button:focus-visible,input:focus-visible,.tile:focus-visible{outline:3px solid v
 .levels{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
 .hero>*{min-width:0}
 .lvl{width:100%;display:grid;grid-template-columns:auto 1fr;grid-template-rows:auto 1fr;align-items:start;gap:4px 14px;text-align:left;background:var(--panel);border:2px solid var(--line);border-radius:10px;padding:16px 20px;transition:border-color .15s,transform .15s}
+.lvl{position:relative}
+.lvl .best{padding-right:84px}
 .lvl:hover{border-color:var(--red)}
+.lvl .go{position:absolute;right:14px;bottom:14px;display:inline-flex;align-items:center;gap:6px;background:var(--red);color:#fff;border-radius:999px;padding:6px 12px 6px 14px;font-family:var(--bold,var(--body));font-weight:700;font-size:15px;line-height:1}
+.lvl .go svg{width:12px;height:12px;fill:currentColor}
+.lvl:hover .go{background:var(--red-dark)}
+.hero-cta{display:flex;flex-wrap:wrap;align-items:center;gap:12px 16px;margin-top:22px}
+.hero-cta span{color:var(--muted);font-size:15px;max-width:30ch;line-height:1.35}
+.play-now{display:inline-flex;align-items:center;gap:10px;background:var(--red);color:#fff;border:0;border-radius:10px;padding:0 26px 0 22px;min-height:60px;font-family:var(--display);font-weight:800;font-size:28px;letter-spacing:.01em;box-shadow:0 10px 24px -12px rgba(204,0,0,.7);transition:transform .15s,background .15s}
+.play-now svg{width:22px;height:22px;fill:currentColor}
+.play-now:hover{background:var(--red-dark);transform:translateY(-2px)}
+.play-now:active{transform:scale(.98)}
+.play-now:focus-visible{outline:3px solid var(--live);outline-offset:3px}
 .lvl .sz{color:var(--red)}
 .lvl:active{transform:scale(.98)}
 .lvl .sz{font-family:var(--display);font-weight:700;font-size:30px;min-width:56px;grid-row:span 2;align-self:center}
@@ -199,6 +211,8 @@ td.name{font-family:var(--display);font-weight:700;font-size:20px;letter-spacing
   .brand h1{order:1;font-size:clamp(60px,20vw,84px)}
   .brand h1 .l2{display:inline;margin-left:.18em}
   .brand p{order:2;margin:0;font-size:17px}
+  .hero-cta{order:2;margin-top:0}
+  .play-now{width:100%;justify-content:center}
   .levels{gap:10px}
   .board.demo{width:min(100%,260px);margin:18px auto 0}
   .lvl{grid-template-columns:auto 1fr;gap:4px 14px;padding:12px 16px}
@@ -350,6 +364,10 @@ html.embed-sized .card{max-height:calc(var(--view-h,100vh) - 40px)}
     <div class="brand">
       <h1>Live<span class="l2">wire</span></h1>
       <p>Every tile is a piece of cable run. Turn them until the supply reaches every load, with no bare ends left anywhere.</p>
+      <div class="hero-cta">
+        <button class="play-now" id="playNow" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4.5v15l12-7.5z"/></svg>Play now</button>
+        <span>Starts on Apprentice, a 5 × 5 board. Pick a harder level below.</span>
+      </div>
     </div>
     <div class="howto">
       <h2 class="sec">How to play</h2>
@@ -363,7 +381,7 @@ html.embed-sized .card{max-height:calc(var(--view-h,100vh) - 40px)}
     </div>
   </div>
   <div class="pick">
-    <h2 class="sec">Pick a level</h2>
+    <h2 class="sec">Pick a level to play</h2>
     <div class="levels" id="levels"></div>
   </div>
   <div class="title-foot">
@@ -832,7 +850,8 @@ function renderLevels(){
   Object.values(LEVELS).forEach(L=>{
     const best=(all[L.key]||[])[0];
     const b=document.createElement("button"); b.className="lvl";
-    b.innerHTML=`<span class="sz">${L.n}×${L.n}</span><span><strong>${L.name}</strong><span class="d">${L.desc}</span></span><span class="best">${best?`Best ${best.score}<br>${best.name}`:"No scores yet"}</span>`;
+    b.innerHTML=`<span class="sz">${L.n}×${L.n}</span><span><strong>${L.name}</strong><span class="d">${L.desc}</span></span><span class="best">${best?`Best ${best.score}<br>${best.name}`:"No scores yet"}</span><span class="go" aria-hidden="true">Play <svg viewBox="0 0 24 24"><path d="M7 4.5v15l12-7.5z"/></svg></span>`;
+    b.setAttribute("aria-label",`Play ${L.name}, ${L.n} by ${L.n} board`);
     b.addEventListener("click",()=>startLevel(L.key));
     box.appendChild(b);
   });
@@ -976,6 +995,7 @@ if(EMBED){
   embedPost({type:"ready"}); embedReport();
 }
 
+$("playNow").addEventListener("click",()=>startLevel("apprentice"));
 renderLevels();
 })();
 </script>
